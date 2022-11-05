@@ -1,7 +1,7 @@
-from flask import Blueprint, jsonify, make_response, request
+from os import abort
+from flask import Blueprint, jsonify, make_response, request, abort
 from app import db
 from app.models.task import Task
-
 
 
 tasks_bp = Blueprint("tasks",__name__, url_prefix="/tasks")
@@ -38,3 +38,28 @@ def get_task():
         })
     
     return jsonify(tasks_response)
+
+#Error Handling an invalid task or non-existing task
+def validate_task(task_id):
+    try:
+        task_id = int(task_id)
+    except:
+        abort(make_response({"message":f"task {task_id} invalid"}, 400))
+
+    task = Task.query.get(task_id)
+
+    if not task:
+        abort(make_response({"message":f"task {task_id} not found"}, 404))
+
+    return task
+
+#Get a single task
+@tasks_bp.route("/<task_id>", methods=["GET"])
+def read_one_task(task_id):
+    task = validate_task(task_id)
+
+    return {
+        "id": task.task_id,
+        "title": task.title,
+        "description": task.description
+    }
