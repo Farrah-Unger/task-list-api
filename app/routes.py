@@ -30,7 +30,7 @@ def get_task():
         tasks_response.append(
             {
             "task": {
-            "id": 1,
+            "id": task.task_id,
             "title": task.title,
             "description": task.description,
             "is_complete": task.completed_at
